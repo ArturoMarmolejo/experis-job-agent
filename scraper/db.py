@@ -56,4 +56,4 @@ def known_lastmods(conn):
 def upsert_job(conn, job, slug, lastmod):
     """Insert a new job, or update it if the reference number already exists."""
     now = datetime.now(timezone.utc).isoformat(timespec="seconds")
-    conn.execute(UPSERT, {**job, "slug": slug, "lastmod": lastmod, "now": now})
+    conn.execute(UPSERT, {**job.model_dump(mode="json"), "slug": slug, "lastmod": lastmod, "now": now})

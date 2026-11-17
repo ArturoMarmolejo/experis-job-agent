@@ -42,7 +42,7 @@ def main():
             db.upsert_job(conn, job, j.slug, j.lastmod)
             conn.commit()                 # save each job right away: a crash loses nothing
             saved += 1
-            print(f"  [{i}/{len(todo)}] saved {job['job_id']}  {job['title']}  ({job['location']})")
+            print(f"  [{i}/{len(todo)}] saved {job.job_id}  {job.title}  ({job.location})")
         except Exception as e:            # one bad page must not stop the whole run
             failed += 1
             print(f"  [{i}/{len(todo)}] FAILED {j.url}: {e}")
