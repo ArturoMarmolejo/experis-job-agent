@@ -1,4 +1,4 @@
-"""Helper: show where job fields live in the JSON embedded in a job page.
+"""Helper: show where job fields live in the data embedded in a job page.
 Usage: python scripts/explore_job_json.py /tmp/job.html 410607
 """
 import json
@@ -21,21 +21,42 @@ def walk(obj, path=""):
         yield path, obj
 
 
-def main(html_path, ref_number):
-    html = open(html_path, encoding="utf-8").read()
-    m = re.search(r'<script id="__NEXT_DATA__"[^>]*>(.*?)</script>', html, re.S)
-    if not m:
-        print("[explore] no __NEXT_DATA__ block; ld+json blocks:",
-              html.count("application/ld+json"))
-        return
-    data = json.loads(m.group(1))
-    print("[explore] __NEXT_DATA__ found,", len(m.group(1)), "characters")
+def show_fields(data, ref_number):
+    """Print fields whose name looks job-related or whose value has the reference number."""
     for path, value in walk(data):
         text = str(value)
         key = path.rsplit(".", 1)[-1].lower()
         if ref_number in text or "jobapply" in text.lower() \
                 or any(h in key for h in KEY_HINTS):
-            print(f"{path} = {text[:100]!r}")
+            print(f"  {path} = {text[:100]!r}")
+
+
+def main(html_path, ref_number):
+    html = open(html_path, encoding="utf-8").read()
+
+    # (a) schema.org blocks: <script type="application/ld+json">
+    blocks = re.findall(r'<script[^>]*application/ld\+json[^>]*>(.*?)</script>', html, re.S)
+    for i, block in enumerate(blocks):
+        print(f"\n[explore] ld+json block {i}:")
+        try:
+            print(json.dumps(json.loads(block), indent=2)[:1500])
+        except json.JSONDecodeError as e:
+            print("  not valid JSON:", e, "| starts with:", block[:200])
+
+    # (b) the page-state script: the one whose text contains "jobItemID"
+    for m in re.finditer(r'<script([^>]*)>(.*?)</script>', html, re.S):
+        attrs, body = m.groups()
+        if '"jobItemID"' not in body:
+            continue
+        print(f"\n[explore] state script attributes: {attrs.strip()!r}, {len(body)} characters")
+        print("  starts with:", body[:80].replace("\n", " "))
+        start, end = body.find("{"), body.rfind("}")   # cut from the first { to the last }
+        try:
+            data = json.loads(body[start:end + 1])
+        except json.JSONDecodeError as e:
+            print("  could not parse as JSON:", e)
+            continue
+        show_fields(data, ref_number)
 
 
 if __name__ == "__main__":
