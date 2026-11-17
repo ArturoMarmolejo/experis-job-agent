@@ -7,3 +7,4 @@ screenshots/
 .env
 config/profile.yaml
 config/*.docx
+*:Zone.Identifier
