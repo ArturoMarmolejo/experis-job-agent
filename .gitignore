@@ -1,0 +1,9 @@
+.venv/
+__pycache__/
+*.db
+data/
+logs/
+screenshots/
+.env
+config/profile.yaml
+config/*.docx

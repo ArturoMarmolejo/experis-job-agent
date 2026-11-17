@@ -1,0 +1,24 @@
+# Words we look for in the job URL (the "slug"), e.g.
+# https://www.experis.com/en/job/410793/azure-data-engineer
+include_keywords:
+  - data-engineer
+  - android
+  - kotlin
+  - mobile
+  - frontend
+  - front-end
+  - react
+  - next-js
+  - angular
+  - vue
+  - javascript
+  - typescript
+  - node
+  - full-stack
+  - fullstack
+
+# If any of these appear, skip the job even if it matched above
+exclude_keywords:
+  - dental
+  - nurse
+  - sales
