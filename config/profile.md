@@ -14,6 +14,7 @@
 - typescript developer
 - node.js engineer
 - software engineer
+- typescript engineer
 
 ## Core skills
 - python
