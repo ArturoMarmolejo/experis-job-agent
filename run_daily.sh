@@ -4,6 +4,12 @@
 set -euo pipefail                      # stop at the first failing step
 
 cd "$HOME/experis-job-agent"
+# Only one run at a time: a second copy exits immediately instead of clashing on jobs.db
+exec 9>/tmp/experis_daily.lock
+if ! flock -n 9; then
+    echo "=== skipped $(date '+%F %T'): another run is in progress ===" >> "logs/daily_$(date +%F).log"
+    exit 0
+fi
 source .venv/bin/activate
 mkdir -p logs
 LOG="logs/daily_$(date +%F).log"
