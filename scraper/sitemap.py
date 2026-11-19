@@ -9,7 +9,8 @@ import yaml
 SITEMAP_URL = "https://www.experis.com/sitemap.xml"
 JOB_URL = re.compile(r"/en/job/(\d+)/([^/?#]*)")   # captures (job_id, slug)
 HEADERS = {"User-Agent": "Mozilla/5.0 (personal job-search script)"}
-
+SESSION = requests.Session()          # one connection, reused for every request
+SESSION.headers.update(HEADERS)
 
 @dataclass
 class SitemapJob:
@@ -25,7 +26,7 @@ def load_settings(path="config/search.yaml"):
 
 
 def fetch_sitemap(url=SITEMAP_URL):
-    resp = requests.get(url, headers=HEADERS, timeout=30)
+    resp = SESSION.get(url, timeout=30)
     resp.raise_for_status()            # stop loudly on 403/500 instead of parsing an error page
     return resp.content
 

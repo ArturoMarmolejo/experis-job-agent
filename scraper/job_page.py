@@ -7,11 +7,10 @@ import sys
 from datetime import datetime, timezone
 from typing import Optional
 
-import requests
 from bs4 import BeautifulSoup
 from pydantic import BaseModel, field_validator
 
-from scraper.sitemap import HEADERS, JOB_URL    # reuse what step 3a already defined
+from scraper.sitemap import JOB_URL, SESSION    # shared connection + URL pattern
 
 BASE = "https://www.experis.com"
 
@@ -52,7 +51,7 @@ class Job(BaseModel):
         return ", ".join(parts)
 
 def fetch_html(url):
-    resp = requests.get(url, headers=HEADERS, timeout=30)
+    resp = SESSION.get(url, timeout=30)
     resp.raise_for_status()
     return resp.text
 
