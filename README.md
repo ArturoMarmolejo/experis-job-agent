@@ -20,6 +20,7 @@ sitemap.xml ─▶ keyword filter ─▶ new/changed only ─▶ fetch page ─�
 - **Explainable matching:** deal-breakers, a 30-day window, title, skill and location scores, each with a reason.
 - **Reports:** HTML (NEW badges, Apply buttons) plus CSV and JSON exports.
 - **Scheduled:** Windows Task Scheduler runs `run_daily.sh` at 08:30, with a lock against overlapping runs.
+- **Apply (dry run by default):** a visible Camoufox browser fills the application form and stops before APPLY; submitting needs `--submit`, a real applicant who accepted the privacy policy, and a per-job confirmation.
 
 ## Setup (WSL Ubuntu)
 ```bash
@@ -45,6 +46,28 @@ In **Task Scheduler**: daily at 08:30, program `wsl.exe`, arguments
 `-d Ubuntu -- bash /home/<user>/experis-job-agent/run_daily.sh`.
 Tick "run as soon as possible after a missed start" and untick "only on AC power".
 
+## Applying (dry run by default)
+```bash
+pip install camoufox && python -m camoufox fetch    # one time
+cp config/applicant.example.yaml config/applicant.yaml   # then edit (git-ignored)
+python -m scraper.apply --job-id 410607             # dry run: fills the form, screenshot, never clicks APPLY
+python -m scraper.apply --limit 2                   # dry run on the 2 best matches (score >= 70)
+```
+Submitting requires **all** of: `--submit`, `fictional: false`, a real (non `@example.com`) email,
+`consent.accept_privacy_policy: true`, and typing `y` for each job. Every attempt is recorded in the
+`applications` table with a screenshot in `screenshots/`. Applying is never part of the daily schedule.
+
+## Tests
+```bash
+pip install -r requirements-dev.txt
+python -m pytest -q          # offline: no network, no browser, no real data
+```
+GitHub Actions runs the same suite on every push (`.github/workflows/tests.yml`).
+
+## Logs
+- `logs/agent.log`: every run, with time, level and module (rotates at 2 MB, keeps 5 files). Find problems with `grep WARNING logs/agent.log`.
+- `logs/daily_<date>.log`: full output of each scheduled run (kept 30 days).
+
 ## Project layout
 | Path | Purpose |
 |---|---|
@@ -56,6 +79,8 @@ Tick "run as soon as possible after a missed start" and untick "only on AC power
 | `scraper/report.py` | HTML / CSV / JSON report |
 | `run_daily.sh` | locked daily run with logging |
 | `scripts/explore_job_json.py` | helper used to inspect a job page's embedded data |
+| `scraper/apply.py` | form filling with safety rails (dry run by default) |
+| `scraper/log.py` | shared rotating logger |
 
 ## Notes
 - The test resume is a **fictional persona** and is never submitted to employers.
