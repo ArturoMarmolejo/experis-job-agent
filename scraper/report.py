@@ -7,6 +7,7 @@ import json
 from datetime import datetime, timedelta, timezone
 from html import escape
 from pathlib import Path
+from scraper.log import get_logger
 
 from scraper.matcher import load_profile, rank_jobs
 
@@ -123,9 +124,10 @@ def main():
     write_csv(rows, base.with_suffix(".csv"))
     write_json(rows, base.with_suffix(".json"))
 
-    print(f"[report] {len(rows)} jobs (score >= {args.min_score}), "
-          f"{sum(r['new'] for r in rows)} new in the last 24 h")
-    print(f"[report] wrote {base}.html / .csv / .json")
+    log = get_logger()
+    log.info(f"{len(rows)} jobs (score >= {args.min_score}), "
+             f"{sum(r['new'] for r in rows)} new in the last 24 h")
+    log.info(f"wrote {base}.html / .csv / .json")
 
 
 if __name__ == "__main__":

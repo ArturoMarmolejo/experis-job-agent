@@ -10,6 +10,7 @@ from pathlib import Path
 import docx
 
 from scraper.db import DB_PATH
+from scraper.log import get_logger
 
 PROFILE_PATH = Path("config/profile.md")
 RESUME_PATH = Path("config/resume.docx")
@@ -58,7 +59,7 @@ def warn_unbacked_skills(profile, resume):
     """Every skill we match on should be backed by the resume."""
     for skill in profile.get("core skills", []) + profile.get("nice to have", []):
         if not has(resume, skill, whole_word=False):
-            print(f"[matcher] warning: profile skill '{skill}' is not in the resume")
+            get_logger().warning(f"profile skill '{skill}' is not in the resume")
 
 
 def score_job(job, profile, cutoff):

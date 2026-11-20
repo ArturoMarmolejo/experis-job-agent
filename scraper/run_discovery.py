@@ -8,9 +8,11 @@ import time
 from scraper import db
 from scraper.job_page import fetch_html, parse_job_page
 from scraper.sitemap import fetch_sitemap, load_settings, matches, parse_sitemap
+from scraper.log import get_logger
 
 
 def main():
+    log = get_logger()
     parser = argparse.ArgumentParser()
     parser.add_argument("--limit", type=int, default=None, help="fetch at most N pages (testing)")
     parser.add_argument("--min-delay", type=float, default=3.0, help="seconds between pages")
@@ -32,9 +34,8 @@ def main():
     if args.limit:
         todo = todo[: args.limit]
 
-    print(f"[discovery] sitemap {len(jobs)} | match {len(hits)} | new {len(new)} "
-          f"| changed {len(changed)} | fetching {len(todo)}")
-
+    log.info(f"sitemap {len(jobs)} | match {len(hits)} | new {len(new)} | changed {len(changed)} | fetching {len(todo)}")
+    
     saved = failed = 0
     for i, j in enumerate(todo, 1):
         try:
@@ -42,15 +43,15 @@ def main():
             db.upsert_job(conn, job, j.slug, j.lastmod)
             conn.commit()                 # save each job right away: a crash loses nothing
             saved += 1
-            print(f"  [{i}/{len(todo)}] saved {job.job_id}  {job.title}  ({job.location})")
+            log.info(f"[{i}/{len(todo)}] saved {job.job_id}  {job.title}  ({job.location})")
         except Exception as e:            # one bad page must not stop the whole run
             failed += 1
-            print(f"  [{i}/{len(todo)}] FAILED {j.url}: {e}")
+            log.warning(f"[{i}/{len(todo)}] FAILED {j.url}: {e}")
         if i < len(todo):
             time.sleep(random.uniform(args.min_delay, args.max_delay))   # be polite to Experis
 
     conn.close()
-    print(f"[discovery] done: saved {saved}, failed {failed}")
+    log.info(f"done: saved {saved}, failed {failed}")
 
 
 if __name__ == "__main__":

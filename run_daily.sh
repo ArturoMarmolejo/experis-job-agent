@@ -12,6 +12,7 @@ if ! flock -n 9; then
 fi
 source .venv/bin/activate
 mkdir -p logs
+find logs -name 'daily_*.log' -mtime +30 -delete      # keep 30 days of daily logs
 LOG="logs/daily_$(date +%F).log"
 
 {
