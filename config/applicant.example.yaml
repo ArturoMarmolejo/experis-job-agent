@@ -1,0 +1,13 @@
+# Who is applying. This file is git-ignored: real details stay on this laptop.
+fictional: true                     # true = test persona: the tool will NEVER submit
+
+first_name: Jordan
+last_name: Reyes
+email: jordan.reyes@example.com     # example.com is reserved for testing: never a real mailbox
+phone: "5550104821"                 # fictional 555 number
+resume: config/resume.docx
+
+consent:
+  accept_privacy_policy: false      # clicking APPLY = agreeing to Experis's privacy policy; only a real applicant sets this
+  promotional_emails: false
+  sms_messages: false

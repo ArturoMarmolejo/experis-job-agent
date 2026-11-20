@@ -4,3 +4,4 @@ pyyaml
 playwright
 pydantic
 python-docx
+camoufox

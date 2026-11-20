@@ -8,3 +8,4 @@ screenshots/
 config/profile.yaml
 config/*.docx
 *:Zone.Identifier
+config/applicant.yaml
