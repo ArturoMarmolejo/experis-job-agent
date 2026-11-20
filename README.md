@@ -21,6 +21,7 @@ sitemap.xml ─▶ keyword filter ─▶ new/changed only ─▶ fetch page ─�
 - **Reports:** HTML (NEW badges, Apply buttons) plus CSV and JSON exports.
 - **Scheduled:** Windows Task Scheduler runs `run_daily.sh` at 08:30, with a lock against overlapping runs.
 - **Apply (dry run by default):** a visible Camoufox browser fills the application form and stops before APPLY; submitting needs `--submit`, a real applicant who accepted the privacy policy, and a per-job confirmation.
+- **Browser fallback:** if plain HTTP is ever blocked (403/429/503 or a Cloudflare challenge), discovery switches to Camoufox for the rest of the run (`--fetch auto|http|browser`).
 
 ## Setup (WSL Ubuntu)
 ```bash
